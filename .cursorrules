@@ -1,0 +1,48 @@
+# Codebase Architect Agentic Guidelines
+
+You are assisting a developer in working on `Codebase Architect`, an experimental and visually stunning Next.js (App Router) application. This tool transforms public GitHub repositories into interactive, AI-explained architectural node graphs. 
+
+When generating code, analyzing bugs, or suggesting architectures, strictly adhere to the following stack, rules, and aesthetic principles.
+
+## 🛠️ Technology Stack
+- **Framework**: Next.js 14+ (App Router), React 19
+- **Language**: TypeScript (Strict typing preferred)
+- **Styling**: Tailwind CSS v4, `globals.css`
+- **Animations**: Framer Motion
+- **Visualization:** React Flow (`@xyflow/react`)
+- **Icons**: Lucide React
+- **AI Agent**: Vercel AI SDK 3.0 + Google Gemini (Flash)
+- **Infrastructure**: Upstash Redis (Ratelimiting)
+
+## 🎨 Aesthetics & Design Philosophy
+This application must feel **premium, magical, and highly "techy"**.
+- **Dark Mode Native**: We do not support a light mode. The overarching theme is deep space/glassmorphism (`bg-black`, `bg-slate-950`).
+- **Glassmorphism**: Favor `bg-white/5`, `backdrop-blur-xl`, and `border-white/10` for panels, inputs, and modals to create depth.
+- **Accents**: Use the `primary` (blue) and `accent` (violet) Tailwind variables defined in `globals.css` for glows, active states, and buttons. 
+- **Typography**: Explanations and documentation within the UI should use `@tailwindcss/typography` (`prose prose-invert`) for beautiful markdown rendering.
+
+## 🏗️ Core Architecture & Components
+1. **The Graph Engine (`app/api/repo/route.ts`)**: 
+   - Fetches repository data recursively using the GitHub API.
+   - Responsible for stripping noise (e.g., node_modules, .git) to keep payloads small.
+   - Protected by Upstash Ratelimiting.
+
+2. **The Visualizer (`components/GraphVisualizer.tsx`)**:
+   - Uses `React Flow` to plot the flat array of files into a 2D space.
+   - Custom Node definitions are used to inject Lucide icons and our dark theme into the graph nodes. 
+   - *Note on React Flow CSS*: We have extensive global overrides in `globals.css` to force the React Flow interactive controls (Zoom/Fit) to match our dark mode. Do not use inline styles to fix React Flow bugs; use the global stylesheet.
+
+3. **The Agent UI (`components/AgentExplanationPanel.tsx`)**:
+   - A slide-out panel that handles the chat interface.
+   - Because of breaking changes in `@ai-sdk/react` v3.0, we **do not** use the `useChat` hook. Instead, we use a custom `fetch` implementation (`runAgent`) that manually handles the `ReadableStream` decoding and state updates.
+
+4. **The AI Stream (`app/api/chat/route.ts`)**:
+   - Uses `gemini-2.5-flash` natively via `@ai-sdk/google`.
+   - The system prompt gives the agent context about the clicked file *and* the surrounding 500 files.
+   - *Caution*: Gemini streams raw text by default, not the Vercel data stream protocol. The client reads the stream as a standard `TextDecoder` chunk loop.
+
+## 🚨 Development Rules
+1. **Always implement Rate Limits**: Any new API route exposed to the frontend MUST be secured using the `lib/ratelimit.ts` Upstash middleware. 
+2. **Server vs. Client Components**: Ensure interactive components (Framotion Motion, React Flow, hooks) have the `"use client"` directive.
+3. **No `useChat`**: Do not attempt to refactor `AgentExplanationPanel` to use the Vercel AI SDK's `useChat` hook. It breaks within our specific Next.js/App Router configuration. Maintain the manual fetch/stream loop.
+4. **Markdown Formatting**: When editing the `systemPrompt` in `api/chat/route.ts`, instruct the AI to use bold headers, bullet points, and code blocks. The frontend `react-markdown` library will handle making it look pretty.
