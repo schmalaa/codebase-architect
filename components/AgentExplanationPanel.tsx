@@ -108,7 +108,7 @@ export function AgentExplanationPanel({ isOpen, onClose, filePath, repoContext }
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: "100%", opacity: 0 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="absolute top-4 bottom-4 right-4 w-[400px] bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50"
+                    className="absolute top-4 bottom-4 left-4 sm:left-auto right-4 sm:w-[400px] z-50 bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
