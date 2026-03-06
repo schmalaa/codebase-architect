@@ -3,7 +3,7 @@
   <h1>Codebase Architect 🏗️✨</h1>
   <p><strong>Transform flat GitHub repositories into beautiful, interactive, AI-explained architectures.</strong></p>
   <br />
-  <img src="/preview.png" alt="Codebase Architect Preview" width="800" style="border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.5);" />
+  <img src="public/preview.png" alt="Codebase Architect Preview" width="800" style="border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.5);" />
 </div>
 
 ---
