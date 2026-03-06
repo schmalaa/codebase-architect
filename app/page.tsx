@@ -91,19 +91,21 @@ export default function Home() {
             <form onSubmit={handleSubmit} className="w-full max-w-2xl relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-accent/50 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
 
-              <div className="relative flex items-center bg-black/40 border border-white/10 backdrop-blur-xl rounded-2xl p-2 shadow-2xl">
-                <Github className="w-6 h-6 text-white/40 ml-4 hidden sm:block" />
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://github.com/owner/repo"
-                  className="flex-1 bg-transparent border-none outline-none text-white px-4 py-4 text-lg placeholder:text-white/30"
-                />
+              <div className="relative flex flex-col sm:flex-row items-center bg-black/40 border border-white/10 backdrop-blur-xl rounded-2xl p-2 shadow-2xl gap-2 sm:gap-0">
+                <div className="flex items-center flex-1 w-full">
+                  <Github className="w-6 h-6 text-white/40 ml-2 sm:ml-4 hidden sm:block" />
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="https://github.com/owner/repo"
+                    className="w-full bg-transparent border-none outline-none text-white px-4 py-3 sm:py-4 text-base sm:text-lg placeholder:text-white/30"
+                  />
+                </div>
                 <button
                   type="submit"
                   disabled={!url || isLoading}
-                  className="bg-white text-black font-semibold px-8 py-4 rounded-xl hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95 min-w-[140px] justify-center"
+                  className="w-full sm:w-auto bg-white text-black font-semibold px-8 py-3 sm:py-4 rounded-xl hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95 sm:min-w-[140px]"
                 >
                   {isLoading ? (
                     <Activity className="w-5 h-5 animate-spin" />
