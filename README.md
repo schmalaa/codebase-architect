@@ -2,6 +2,7 @@
   <img src="https://assets.vercel.com/image/upload/v1607554385/repositories/next-js/next-logo.png" height="40" alt="Next.js logo" />
   <h1>Codebase Architect 🏗️✨</h1>
   <p><strong>Transform flat GitHub repositories into beautiful, interactive, AI-explained architectures.</strong></p>
+  <p><a href="https://codebase-architect.vercel.app/" target="_blank"><strong>🌐 View Live Demo</strong></a></p>
   <br />
   <img src="public/preview.png" alt="Codebase Architect Preview" width="800" style="border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.5);" />
 </div>
