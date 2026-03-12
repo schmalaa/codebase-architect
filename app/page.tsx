@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Activity, Sparkles, FolderGit2, Info, X } from "lucide-react";
-import { GraphVisualizer, GithubNode } from "@/components/GraphVisualizer";
+import { Github, Activity, Sparkles, FolderGit2, Info, X, LayoutTemplate, Network, GitPullRequestDraft } from "lucide-react";
+import { GraphVisualizer, GithubNode, LayoutType } from "@/components/GraphVisualizer";
 import { AgentExplanationPanel } from "@/components/AgentExplanationPanel";
 import { FileSearch } from "@/components/FileSearch";
 
@@ -16,6 +16,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const [repoData, setRepoData] = useState<{ owner: string; repo: string; tree: GithubNode[] } | null>(null);
+
+  const [layout, setLayout] = useState<LayoutType>("radial");
 
   // App State for Agent Panel
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -214,7 +216,28 @@ export default function Home() {
 
               {/* Search Panel */}
               {repoData && (
-                <div className="pointer-events-auto">
+                <div className="pointer-events-auto flex items-center space-x-4">
+                  
+                  {/* Layout Picker */}
+                  <div className="hidden sm:flex items-center bg-black/50 border border-white/10 backdrop-blur-xl rounded-xl p-1 shadow-lg">
+                    {(["radial", "tree", "cluster"] as LayoutType[]).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setLayout(type)}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm transition-all ${
+                          layout === type
+                            ? "bg-white/10 text-white shadow-inner"
+                            : "text-white/50 hover:text-white/80 hover:bg-white/5"
+                        }`}
+                      >
+                        {type === "radial" && <Network className="w-4 h-4" />}
+                        {type === "tree" && <GitPullRequestDraft className="w-4 h-4" />}
+                        {type === "cluster" && <LayoutTemplate className="w-4 h-4" />}
+                        <span className="capitalize">{type}</span>
+                      </button>
+                    ))}
+                  </div>
+
                   <FileSearch tree={repoData.tree} onSelect={handleNodeClick} />
                 </div>
               )}
@@ -226,6 +249,7 @@ export default function Home() {
                 owner={repoData.owner}
                 repo={repoData.repo}
                 tree={repoData.tree}
+                layoutType={layout}
                 onNodeClick={handleNodeClick}
               />
             )}
