@@ -16,6 +16,7 @@
     "@types/dagre": "^0.7.54",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.3",
+    "@vercel/analytics": "^2.0.1",
     "@xyflow/react": "^12.10.1",
     "ai": "^6.0.116",
     "clsx": "^2.1.1",
