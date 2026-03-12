@@ -13,13 +13,15 @@
 
 Codebase Architect is an experimental, visually-stunning tool designed to help developers instantly understand unfamiliar repositories. 
 
-Instead of reading through endless folders of code, simply paste a public GitHub URL. The application will fetch the entire codebase structure and render it as an interactive, draggable node-graph.
+Instead of reading through endless folders of code, simply paste a public or private GitHub URL (using a secure Personal Access Token). The application will fetch the entire codebase structure and render it as an interactive, draggable node-graph.
 
 **The Magic:** Click on any node (file) in the graph, and our embedded **Architect Agent** (powered by Google's cutting-edge Gemini 2.5 Flash model) will instantly stream a concise, "techy" explanation of exactly what architectural purpose that file serves within the broader project context.
 
 ## ✨ Features
 
 - 🕸️ **Live Graph Rendering:** Automatically converts deep file-tree hierarchies into beautiful React Flow node graphs.
+- 📐 **Multiple Layout Engines:** Toggle seamlessly between Radial (Fibonacci Spiral), Tree (`dagre`), and Cluster (`d3-hierarchy`) topological layouts.
+- 🔒 **Private Repository Support:** Bring your closed-source architectures to life using a secure, strictly-proxied GitHub PAT.
 - 🤖 **AI Codebase Architect:** Built-in AI assistant using the Vercel AI SDK to explain complex files on demand.
 - ⚡ **Lightning Fast Streams:** Real-time text streaming powered by Gemini 2.5 Flash.
 - 🛡️ **Production Ready Rate Limits:** Hardened against abuse using Upstash Redis sliding-window IP limits.
@@ -63,12 +65,12 @@ Want to run your own instance of the Architect? It takes 60 seconds to set up.
 
 ## 💡 How it Works Under the Hood
 
-1. **The Graph Engine:** The `/api/repo` route fetches the raw recursive Tree from the GitHub API. It strips out noise (like `.git` and `node_modules`), caps the payload to avoid browser crashing, and passes it to the frontend.
-2. **The Layout Algorithm:** React Flow takes the linear files and dynamically calculates X/Y coordinates based on file depth and directory groupings, creating a spreading organic web.
+1. **The Graph Engine:** The `/api/repo` route securely proxies GitHub API requests (with optional PAT auth) to fetch the raw recursive Tree. It strips out noise (like `.git` and `node_modules`), caps the payload to avoid browser crashes, and serves it to the frontend.
+2. **The Layout Algorithms:** We use a combination of custom math (`radial`), `dagre` (`tree`), and `d3-hierarchy` (`cluster`) to dynamically calculate topological node coordinates based on directory groupings and depth.
 3. **The AI Stream:** When a node is clicked, an isolated `/api/chat` request runs. It gives the AI the name of the file *and* the names of the other 500 files surrounding it (as context). The Vercel AI SDK then streams the explanation chunk-by-chunk back to the React UI, applying a `framer-motion` thinking state while connecting.
 
 ---
 
 <div align="center">
-  <p>Built with ❤️ by Alex as a showcase of modern agentic web development.</p>
+  <p>Built with ❤️ by Alex</p>
 </div>
