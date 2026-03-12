@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Activity, Sparkles, FolderGit2 } from "lucide-react";
+import { Github, Activity, Sparkles, FolderGit2, Info, X } from "lucide-react";
 import { GraphVisualizer, GithubNode } from "@/components/GraphVisualizer";
 import { AgentExplanationPanel } from "@/components/AgentExplanationPanel";
 import { FileSearch } from "@/components/FileSearch";
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const [pat, setPat] = useState("");
+  const [showPatHelp, setShowPatHelp] = useState(false);
   const [isVisualizing, setIsVisualizing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export default function Home() {
       const res = await fetch("/api/repo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url, pat })
       });
 
       const data = await res.json();
@@ -40,8 +42,12 @@ export default function Home() {
 
       setRepoData(data);
       setIsVisualizing(true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,35 +94,94 @@ export default function Home() {
               Paste a public GitHub repository to instantly visualize its architecture and explore its purpose with an autonomous AI agent.
             </p>
 
-            <form onSubmit={handleSubmit} className="w-full max-w-2xl relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-accent/50 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
+            <form onSubmit={handleSubmit} className="w-full max-w-2xl relative flex flex-col gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-accent/50 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition duration-500" />
 
-              <div className="relative flex flex-col sm:flex-row items-center bg-black/40 border border-white/10 backdrop-blur-xl rounded-2xl p-2 shadow-2xl gap-2 sm:gap-0">
-                <div className="flex items-center flex-1 w-full">
-                  <Github className="w-6 h-6 text-white/40 ml-2 sm:ml-4 hidden sm:block" />
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://github.com/owner/repo"
-                    className="w-full bg-transparent border-none outline-none text-white px-4 py-3 sm:py-4 text-base sm:text-lg placeholder:text-white/30"
-                  />
+                <div className="relative flex flex-col sm:flex-row items-center bg-black/40 border border-white/10 backdrop-blur-xl rounded-2xl p-2 shadow-2xl gap-2 sm:gap-0">
+                  <div className="flex items-center flex-1 w-full">
+                    <Github className="w-6 h-6 text-white/40 ml-2 sm:ml-4 hidden sm:block" />
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://github.com/owner/repo"
+                      className="w-full bg-transparent border-none outline-none text-white px-4 py-3 sm:py-4 text-base sm:text-lg placeholder:text-white/30"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!url || isLoading}
+                    className="w-full sm:w-auto bg-white text-black font-semibold px-8 py-3 sm:py-4 rounded-xl hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95 sm:min-w-[140px]"
+                  >
+                    {isLoading ? (
+                      <Activity className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <span>Analyze</span>
+                        <Activity className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
                 </div>
+              </div>
+
+              <div className="relative bg-black/40 border border-white/10 backdrop-blur-xl rounded-xl p-1 shadow-lg mx-auto w-full sm:w-[80%] transition-opacity opacity-70 hover:opacity-100 focus-within:opacity-100">
+                 <input
+                    type="password"
+                    value={pat}
+                    onChange={(e) => setPat(e.target.value)}
+                    placeholder="Provide a GitHub PAT to analyze private repositories (Optional)"
+                    className="w-full bg-transparent border-none outline-none text-white px-4 py-2.5 text-sm placeholder:text-white/30 text-center"
+                 />
+              </div>
+
+              <div className="text-center">
                 <button
-                  type="submit"
-                  disabled={!url || isLoading}
-                  className="w-full sm:w-auto bg-white text-black font-semibold px-8 py-3 sm:py-4 rounded-xl hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95 sm:min-w-[140px]"
+                  type="button"
+                  onClick={() => setShowPatHelp(!showPatHelp)}
+                  className="inline-flex items-center space-x-1.5 text-xs text-white/40 hover:text-white/80 transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/5"
                 >
-                  {isLoading ? (
-                    <Activity className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <span>Analyze</span>
-                      <Activity className="w-5 h-5" />
-                    </>
-                  )}
+                  <Info className="w-3.5 h-3.5" />
+                  <span>How to get a GitHub PAT</span>
                 </button>
               </div>
+
+              <AnimatePresence>
+                {showPatHelp && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, height: "auto", scale: 1 }}
+                    exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-black/50 border border-white/10 backdrop-blur-xl rounded-xl p-5 text-left text-sm text-white/80 shadow-2xl relative mx-auto w-full sm:w-[80%]">
+                      <button 
+                        type="button" 
+                        onClick={() => setShowPatHelp(false)}
+                        className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors p-1"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      
+                      <h3 className="font-semibold text-white mb-3 flex items-center space-x-2">
+                         <Sparkles className="w-4 h-4 text-accent" />
+                         <span>Creating a Personal Access Token</span>
+                      </h3>
+                      
+                      <ol className="list-decimal list-outside ml-4 space-y-2 text-white/70">
+                        <li>Go to <strong>GitHub Settings</strong> &gt; <strong>Developer Settings</strong> &gt; <strong>Personal access tokens</strong> &gt; <strong>Tokens (classic)</strong>.</li>
+                        <li>Click <strong>Generate new token (classic)</strong>.</li>
+                        <li>Give it a descriptive note (e.g., "Codebase Architect").</li>
+                        <li>Under scopes, check the <strong>repo</strong> checkbox (this grants full control of private repositories).</li>
+                        <li>Click <strong>Generate token</strong> at the bottom.</li>
+                        <li>Copy the token and paste it here! <span className="text-xs text-accent mt-1 block">Your token is never stored and only used directly to fetch the repository state.</span></li>
+                      </ol>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {error && (
                 <p className="absolute -bottom-8 left-0 text-red-400 text-sm w-full text-center">
                   {error}

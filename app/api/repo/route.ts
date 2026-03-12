@@ -14,10 +14,15 @@ export async function POST(req: Request) {
             }
         }
 
-        const { url } = await req.json();
+        const { url, pat } = await req.json();
 
         if (!url || typeof url !== "string") {
             return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+        }
+
+        const headers: Record<string, string> = {};
+        if (pat && typeof pat === "string") {
+            headers["Authorization"] = `Bearer ${pat}`;
         }
 
         // Parse URL, expect https://github.com/owner/repo
@@ -32,16 +37,17 @@ export async function POST(req: Request) {
         const cleanRepo = repo.replace(/\.git$/, "");
 
         // Fetch default branch
-        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}`);
+        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}`, { headers });
         if (!repoRes.ok) {
-            return NextResponse.json({ error: "Repository not found or access denied" }, { status: repoRes.status });
+            return NextResponse.json({ error: "Repository not found or access denied (check your PAT if it's a private repo)" }, { status: repoRes.status });
         }
         const repoData = await repoRes.json();
         const defaultBranch = repoData.default_branch || "main";
 
         // Fetch recursive tree
         const treeRes = await fetch(
-            `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${defaultBranch}?recursive=1`
+            `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${defaultBranch}?recursive=1`,
+            { headers }
         );
 
         if (!treeRes.ok) {
