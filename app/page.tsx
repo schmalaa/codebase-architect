@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Activity, Sparkles, FolderGit2, Info, X, LayoutTemplate, Network, GitPullRequestDraft } from "lucide-react";
+import Link from "next/link";
+import { Github, Activity, Sparkles, FolderGit2, Info, X, LayoutTemplate, Network, GitPullRequestDraft, Code } from "lucide-react";
 import { GraphVisualizer, GithubNode, LayoutType } from "@/components/GraphVisualizer";
 import { AgentExplanationPanel } from "@/components/AgentExplanationPanel";
 import { FileSearch } from "@/components/FileSearch";
+import { EmbedModal } from "@/components/EmbedModal";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -22,6 +24,9 @@ export default function Home() {
   // App State for Agent Panel
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  // App State for Embed Modal
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,15 +143,23 @@ export default function Home() {
                  />
               </div>
 
-              <div className="text-center">
+              <div className="text-center flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button
                   type="button"
                   onClick={() => setShowPatHelp(!showPatHelp)}
-                  className="inline-flex items-center space-x-1.5 text-xs text-white/40 hover:text-white/80 transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full border border-white/5"
+                  className="inline-flex items-center space-x-1.5 text-xs text-white/40 hover:text-white/80 transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5"
                 >
                   <Info className="w-3.5 h-3.5" />
                   <span>How to get a GitHub PAT</span>
                 </button>
+
+                <Link 
+                  href="/docs" 
+                  className="inline-flex items-center space-x-1.5 text-xs text-accent/80 hover:text-accent transition-colors bg-accent/10 hover:bg-accent/20 px-4 py-2 rounded-full border border-accent/20"
+                >
+                  <Code className="w-3.5 h-3.5" />
+                  <span>Integration Docs</span>
+                </Link>
               </div>
 
               <AnimatePresence>
@@ -238,6 +251,15 @@ export default function Home() {
                     ))}
                   </div>
 
+                  {/* Embed Button */}
+                  <button
+                    onClick={() => setIsEmbedModalOpen(true)}
+                    className="flex items-center space-x-2 bg-accent/20 hover:bg-accent/40 text-accent hover:text-white border border-accent/30 backdrop-blur-xl rounded-xl px-4 py-2 text-sm transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                  >
+                    <Code className="w-4 h-4" />
+                    <span>Embed</span>
+                  </button>
+
                   <FileSearch tree={repoData.tree} onSelect={handleNodeClick} />
                 </div>
               )}
@@ -263,6 +285,13 @@ export default function Home() {
                 repoContext={`${repoData.owner}/${repoData.repo}`}
               />
             )}
+
+            {/* Embed Modal overlay */}
+            <EmbedModal
+              isOpen={isEmbedModalOpen}
+              onClose={() => setIsEmbedModalOpen(false)}
+              url={url}
+            />
 
           </motion.div>
         )}
